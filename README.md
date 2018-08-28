@@ -37,3 +37,29 @@ Ceci va lancer le processus NodeJS en interpretant le fichier application.js, qu
 Ouvrir Google Chrome et se rendre sur
 
     http://localhost:4242
+
+## Exercices d'apprentissage
+
+Maintenant que le jeu de démo fonctionne, tu peux essayer de jouer avec. Le jeu consiste en une balle qui se déplace et rebondit. Quand on clic sur la balle, sa vitesse horizontale (x) s'inverse.
+
+1. Faire rebondir la balle sur les bords d'en-haut et de gauche
+2. Faire tourner la balle sur elle-même à vitesse constante
+3. Maintenant que la balle tourne sur elle-même, il est possible qu'elle dépasse les bords avant de rebondir. Corriger ce problème.
+4. Faire que quand on clic sur la balle, elle rebondit à l'opposé de où se trouve la souris (par exemple, si on clic en-haut à droite de la balle, elle repart en-bas à gauche)
+5. Ajouter une deuxième balle sur la scène, qui se comporte de manière identique à la première, en ajoutant un minimum de lignes de codes.
+6. Faire que quand on clic ailleurs que sur la balle, cela crée une nouvelle balle dans la scène, qui se comporte de la même manière que toutes les autres balles.
+7. Faire que quand deux balles se touchent, elles disparaissent de la scène
+8. Ajouter un score en-haut à gauche de l'écran. Quand deux balles se touche, le score doit augmenter de 50 points
+9. Rajouter dans la scène un joueur de foot qui se déplace un plus lentement que les balles (vitesse légèrement inférieure) et qui court toujours après la balle la plus proche de lui
+10. Faire que si le joueur touche une balle, elle disparait, et le score baisse de 100 points 
+
+
+## Pour trouver de l'aide
+
+Attention, il existe plusieurs versions de Phaser en même temps. Nous utilisons la version 2, en Community Edition (CE).
+
+L'API complète se situe ici. Attention, Google a parfois l'habitude de trouver les documents dans une ancienne version:
+https://photonstorm.github.io/phaser-ce/
+
+Il existe un tas d'exemples sur le site de phaser:
+https://phaser.io/examples
