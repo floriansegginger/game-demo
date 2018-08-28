@@ -30,7 +30,7 @@ Une fois que le processus d'installation est terminé, tu peux lancer le serveur
 
     $> node server.js
 
-Ceci va lancer le processus NodeJS en interpretant le fichier application.js, qui est le code source du programme qu'on veut lancer. NodeJS ne nécessite pas de compiler le code à l'avance.
+Ceci va lancer le processus NodeJS en interpretant le fichier server.js, qui est le code source du programme qu'on veut lancer. NodeJS ne nécessite pas de compiler le code à l'avance.
 
 ### 5. Lancer le jeu dans ton navigateur web
 
