@@ -20,7 +20,13 @@ En utilisant l'application GitHub Windows, il faut récupérer le code contenu d
 
 ### 4. Lancer le serveur en local
 
-Une fois NodeJS installé, et le code copié en local, tu peux lancer le serveur node en ouvrant une ligne de commande, en te rendant dans le dossier cible (dans lequel se trouve ce code), puis en écrivant
+Une fois NodeJS installé, et le code copié en local, tu peux lancer le serveur node en ouvrant une ligne de commande, puis en te rendant dans le dossier cible.
+
+Il faut d'abord installer les dépendences du projet en faisant
+
+    $> npm install
+
+Une fois que le processus d'installation est terminé, tu peux lancer le serveur en faisant
 
     $> node server.js
 
