@@ -22,7 +22,7 @@ En utilisant l'application GitHub Windows, il faut récupérer le code contenu d
 
 Une fois NodeJS installé, et le code copié en local, tu peux lancer le serveur node en ouvrant une ligne de commande, en te rendant dans le dossier cible (dans lequel se trouve ce code), puis en écrivant
 
-    $> node application.js
+    $> node server.js
 
 Ceci va lancer le processus NodeJS en interpretant le fichier application.js, qui est le code source du programme qu'on veut lancer. NodeJS ne nécessite pas de compiler le code à l'avance.
 
