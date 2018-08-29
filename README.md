@@ -32,6 +32,8 @@ Une fois que le processus d'installation est terminé, tu peux lancer le serveur
 
 Ceci va lancer le processus NodeJS en interpretant le fichier server.js, qui est le code source du programme qu'on veut lancer. NodeJS ne nécessite pas de compiler le code à l'avance.
 
+![](https://i.imgur.com/QKsSRsu.jpg)
+
 ### 5. Lancer le jeu dans ton navigateur web
 
 Ouvrir Google Chrome et se rendre sur
@@ -85,6 +87,8 @@ Cette fonction sera appelée periodiquement, à chaque fois que Phaser voudra me
     
 Pas besoin d'explication pour celle-ci, le nom de la fonction parle d'elle-même :)
 
+![](https://media.makeameme.org/created/javascript-javascript-everywhere.jpg)
+
 ## Exercices d'apprentissage
 
 Maintenant que le jeu de démo fonctionne, tu peux essayer de jouer avec. Le jeu consiste en une balle qui se déplace et rebondit. Quand on clic sur la balle, sa vitesse horizontale (x) s'inverse.
@@ -100,6 +104,7 @@ Maintenant que le jeu de démo fonctionne, tu peux essayer de jouer avec. Le jeu
 9. Rajouter dans la scène un joueur de foot qui se déplace plus lentement que les balles (vitesse légèrement inférieure) et qui court toujours après la balle la plus proche de lui
 10. Faire que si le joueur touche une balle, elle disparait, et le score baisse de 100 points 
 
+![](https://vignette.wikia.nocookie.net/meme/images/f/f3/YChallenge-Accepted-Meme.jpg/revision/latest/scale-to-width-down/640?cb=20150720165458)
 
 ## Pour trouver de l'aide
 
