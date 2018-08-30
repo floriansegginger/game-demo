@@ -12,12 +12,16 @@ function preload() {
     game.load.image('ball', '/images/ball.png');
 }
 
+var ball;
+
 function create() {
     //  This creates a simple sprite that is using our loaded image and
     //  displays it on-screen
     var backgroundImage = game.add.sprite(0, 0, 'background');
 
     var ball = game.add.sprite(618, 333, 'ball');
+    ball.anchor.setTo(0.5, 0.5);
+
 
     game.physics.enable(ball, Phaser.Physics.ARCADE);
 
@@ -33,20 +37,31 @@ function create() {
 function ballUpdate() {
     if (this.body.position.y + this.height > game.height - 70) {
         this.body.velocity.y *= -1;
-        console.log("Boing!");
+        console.log("Boing Bottom!")
     }
     if (this.body.position.y + this.height < 120) {
         this.body.velocity.y *= -1;
-        console.log("Boing!");
+        console.log("Boing Top!")
     }
     if (this.body.position.x + this.width > game.width - 90) {
         this.body.velocity.x *= -1;
-        console.log("Boing!")
+        console.log("Boing right!")
     }
     if (this.body.position.x + this.width < 140) {
         this.body.velocity.x *= -1;
-        console.log("Boing!")
+        console.log("Boing Left!")
     }
+    this.angle += this.body.velocity.x / 40;
+}
+
+function render() {
+
+    game.debug.spriteInfo(ball, 32, 32);
+    // game.debug.text('angularVelocity: ' + sprite.body.angularVelocity, 32, 200);
+    // game.debug.text('angularAcceleration: ' + sprite.body.angularAcceleration, 32, 232);
+    // game.debug.text('angularDrag: ' + sprite.body.angularDrag, 32, 264);
+    // game.debug.text('deltaZ: ' + sprite.body.deltaZ(), 32, 296);
+
 }
 
 function ballClick() {
