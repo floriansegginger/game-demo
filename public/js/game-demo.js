@@ -19,14 +19,14 @@ function create() {
     //  displays it on-screen
     var backgroundImage = game.add.sprite(0, 0, 'background');
 
-    var ball = game.add.sprite(618, 333, 'ball');
+    var ball = game.add.sprite(640, 360, 'ball');
     ball.anchor.setTo(0.5, 0.5);
 
 
     game.physics.enable(ball, Phaser.Physics.ARCADE);
 
-    ball.body.velocity.x = 200;
-    ball.body.velocity.y = 200;
+    ball.body.velocity.x = 0;
+    ball.body.velocity.y = 0;
 
     ball.update = ballUpdate;
 
@@ -65,5 +65,16 @@ function render() {
 }
 
 function ballClick() {
-    this.body.velocity.x *= -1;
+    var realCenterBallX = this.body.position.x + 23;
+    var realCenterBallY = this.body.position.y + 21.5;
+   console.log("Clic : ", game.input.mousePointer.x, game.input.mousePointer.y, "Ball : ", realCenterBallX, realCenterBallY)
+    if (game.input.mousePointer.x < realCenterBallX && game.input.mousePointer.y < realCenterBallY){
+        this.body.velocity.x *= -1;
+        this.body.velocity.y *= -1;
+        console.log("Ball, Go bottom right !")
+    }
+    if (game.input.mousePointer.x > realCenterBallX && game.input.mousePointer.y > realCenterBallY){
+        this.body.velocity.x *= -1;
+        this.body.velocity.y *= -1;
+        console.log("Ball, Go top left !")
 }
