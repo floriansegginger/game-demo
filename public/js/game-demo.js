@@ -17,7 +17,7 @@ function create() {
     //  displays it on-screen
     var backgroundImage = game.add.sprite(0, 0, 'background');
 
-    var ball = game.add.sprite(200, 200, 'ball');
+    var ball = game.add.sprite(618, 333, 'ball');
 
     game.physics.enable(ball, Phaser.Physics.ARCADE);
 
@@ -31,11 +31,19 @@ function create() {
 }
 
 function ballUpdate() {
-    if (this.body.position.y + this.height > game.height) {
+    if (this.body.position.y + this.height > game.height - 70) {
         this.body.velocity.y *= -1;
         console.log("Boing!");
-    } 
-    if (this.body.position.x + this.width > game.width) {
+    }
+    if (this.body.position.y + this.height < 120) {
+        this.body.velocity.y *= -1;
+        console.log("Boing!");
+    }
+    if (this.body.position.x + this.width > game.width - 90) {
+        this.body.velocity.x *= -1;
+        console.log("Boing!")
+    }
+    if (this.body.position.x + this.width < 140) {
         this.body.velocity.x *= -1;
         console.log("Boing!")
     }
