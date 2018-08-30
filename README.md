@@ -24,11 +24,11 @@ Une fois NodeJS installé, et le code copié en local, tu peux lancer le serveur
 
 Il faut d'abord installer les dépendences du projet en faisant
 
-    $> npm install
+    npm install
 
 Une fois que le processus d'installation est terminé, tu peux lancer le serveur en faisant
 
-    $> node server.js
+    node server.js
 
 Ceci va lancer le processus NodeJS en interpretant le fichier server.js, qui est le code source du programme qu'on veut lancer. NodeJS ne nécessite pas de compiler le code à l'avance.
 
