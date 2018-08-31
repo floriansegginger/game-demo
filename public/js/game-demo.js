@@ -25,8 +25,8 @@ function create() {
 
     game.physics.enable(ball, Phaser.Physics.ARCADE);
 
-    ball.body.velocity.x = -100;
-    ball.body.velocity.y = -100;
+    ball.body.velocity.x = 75;
+    ball.body.velocity.y = 100;
 
     ball.update = ballUpdate;
 
@@ -61,98 +61,21 @@ function render() {
     // game.debug.text('angularAcceleration: ' + sprite.body.angularAcceleration, 32, 232);
     // game.debug.text('angularDrag: ' + sprite.body.angularDrag, 32, 264);
     // game.debug.text('deltaZ: ' + sprite.body.deltaZ(), 32, 296);
-
 }
 
 function ballClick() {
     var realCenterBallX = this.body.position.x + 23;
     var realCenterBallY = this.body.position.y + 21.5;
-    var ballMoveX = this.body.velocity.x
-    var ballMoveY = this.body.velocity.y
-    var mouseClicX = game.input.mousePointer.x
-    var mouseClicY = game.input.mousePointer.y
 
-    //command to check the actual ball and mouse position
-    //console.log("Clic : ", game.input.mousePointer.x, game.input.mousePointer.y, "Ball : ", realCenterBallX, realCenterBallY)
-    
-    //the ball is going top left
-    if (ballMoveX < 0 && ballMoveY < 0){
-    	//pressing top left
-    	if (mouseClicX < realCenterBallX && mouseClicY < realCenterBallY) {
-        	this.body.velocity.x *= -1;
-        	this.body.velocity.y *= -1;
-        }
-        //pressing top right
-        if (mouseClicX > realCenterBallX && mouseClicY < realCenterBallY) {
-        	this.body.velocity.y *= -1;
-        }
-        //pressing bottom left
-        if (mouseClicX < realCenterBallX && mouseClicY > realCenterBallY) {
-        	this.body.velocity.x *= -1;
-        }
-        //pressing bottom right
-        if (mouseClicX > realCenterBallX && mouseClicY > realCenterBallY) {
-        	//nothing for instance
-        }
-    }
-    //the ball is going top right
-    if (ballMoveX > 0 && ballMoveY < 0){
-    	//pressing top left
-    	if (mouseClicX < realCenterBallX && mouseClicY < realCenterBallY) {
-        	this.body.velocity.y *= -1;
-        }
-        //pressing top right
-        if (mouseClicX > realCenterBallX && mouseClicY < realCenterBallY) {
-        	this.body.velocity.y *= -1;
-        	this.body.velocity.x *= -1;
-        }
-        //pressing bottom left
-        if (mouseClicX < realCenterBallX && mouseClicY > realCenterBallY) {
-        	//nothing for instance
-        }
-        //pressing bottom right
-        if (mouseClicX > realCenterBallX && mouseClicY > realCenterBallY) {
-        	this.body.velocity.x *= -1;
-        }
-    }
-    //the ball is going bottom left
-    if (ballMoveX < 0 && ballMoveY > 0){
-    	//pressing top left
-        if (mouseClicX < realCenterBallX && mouseClicY < realCenterBallY) {
-        	this.body.velocity.x *= -1;
-        }
-        //pressing top right
-        if (mouseClicX > realCenterBallX && mouseClicY < realCenterBallY) {
-        	//nothing for instance
-        }
-        //pressing bottom left
-        if (mouseClicX < realCenterBallX && mouseClicY > realCenterBallY) {
-        	this.body.velocity.y *= -1;
-        	this.body.velocity.x *= -1;
-        }
-        //pressing bottom right
-        if (mouseClicX > realCenterBallX && mouseClicY > realCenterBallY) {
-        	this.body.velocity.y *= -1;
-        }
-    }
-    //the ball is going bottom right
-    if (ballMoveX > 0 && ballMoveY > 0){
-    	//pressing top left
-    	if (mouseClicX < realCenterBallX && mouseClicY < realCenterBallY) {
-        	//nothing for instance
-        }
-        //pressing top right
-        if (mouseClicX > realCenterBallX && mouseClicY < realCenterBallY) {
-        	this.body.velocity.x *= -1;
-        }
-        //pressing bottom left
-        if (mouseClicX < realCenterBallX && mouseClicY > realCenterBallY) {
-        	this.body.velocity.y *= -1;
-        }
-        //pressing bottom right
-        if (mouseClicX > realCenterBallX && mouseClicY > realCenterBallY) {
-        	this.body.velocity.x *= -1;
-        	this.body.velocity.y *= -1;
-        }
-    }
+    //With this modification the position of the mouse is ball relative
+    //the center of the ball act like the point 0,0
+    var mouseClicX = game.input.mousePointer.x - realCenterBallX
+    var mouseClicY = game.input.mousePointer.y - realCenterBallY
+
+    //the factor is used to maintain the same speed no matter where the user click on the ball
+    var factor = 150 / Math.sqrt((mouseClicX * mouseClicX) + (mouseClicY * mouseClicY))
+
+    //the ball go in the opposite direction of the click
+    this.body.velocity.x = - mouseClicX * factor
+    this.body.velocity.y = - mouseClicY * factor
 }

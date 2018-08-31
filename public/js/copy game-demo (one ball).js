@@ -25,8 +25,8 @@ function create() {
 
     game.physics.enable(ball, Phaser.Physics.ARCADE);
 
-    ball.body.velocity.x = -50;
-    ball.body.velocity.y = -50;
+    ball.body.velocity.x = -100;
+    ball.body.velocity.y = -100;
 
     ball.update = ballUpdate;
 
@@ -77,82 +77,82 @@ function ballClick() {
     
     //the ball is going top left
     if (ballMoveX < 0 && ballMoveY < 0){
-    	//pressing top left
-    	if (mouseClicX < realCenterBallX && mouseClicY < realCenterBallY) {
-        	this.body.velocity.x *= -1;
-        	this.body.velocity.y *= -1;
+        //pressing top left
+        if (mouseClicX < realCenterBallX && mouseClicY < realCenterBallY) {
+            this.body.velocity.x *= -1;
+            this.body.velocity.y *= -1;
         }
         //pressing top right
         if (mouseClicX > realCenterBallX && mouseClicY < realCenterBallY) {
-        	this.body.velocity.y *= -1;
+            this.body.velocity.y *= -1;
         }
         //pressing bottom left
         if (mouseClicX < realCenterBallX && mouseClicY > realCenterBallY) {
-        	this.body.velocity.x *= -1;
+            this.body.velocity.x *= -1;
         }
         //pressing bottom right
         if (mouseClicX > realCenterBallX && mouseClicY > realCenterBallY) {
-        	//nothing for instance
+            //nothing for instance
         }
     }
     //the ball is going top right
     if (ballMoveX > 0 && ballMoveY < 0){
-    	//pressing top left
-    	if (mouseClicX < realCenterBallX && mouseClicY < realCenterBallY) {
-        	this.body.velocity.y *= -1;
+        //pressing top left
+        if (mouseClicX < realCenterBallX && mouseClicY < realCenterBallY) {
+            this.body.velocity.y *= -1;
         }
         //pressing top right
         if (mouseClicX > realCenterBallX && mouseClicY < realCenterBallY) {
-        	this.body.velocity.y *= -1;
-        	this.body.velocity.x *= -1;
+            this.body.velocity.y *= -1;
+            this.body.velocity.x *= -1;
         }
         //pressing bottom left
         if (mouseClicX < realCenterBallX && mouseClicY > realCenterBallY) {
-        	//nothing for instance
+            //nothing for instance
         }
         //pressing bottom right
         if (mouseClicX > realCenterBallX && mouseClicY > realCenterBallY) {
-        	this.body.velocity.x *= -1;
+            this.body.velocity.x *= -1;
         }
     }
     //the ball is going bottom left
     if (ballMoveX < 0 && ballMoveY > 0){
-    	//pressing top left
+        //pressing top left
         if (mouseClicX < realCenterBallX && mouseClicY < realCenterBallY) {
-        	this.body.velocity.x *= -1;
+            this.body.velocity.x *= -1;
         }
         //pressing top right
         if (mouseClicX > realCenterBallX && mouseClicY < realCenterBallY) {
-        	//nothing for instance
+            //nothing for instance
         }
         //pressing bottom left
         if (mouseClicX < realCenterBallX && mouseClicY > realCenterBallY) {
-        	this.body.velocity.y *= -1;
-        	this.body.velocity.x *= -1;
+            this.body.velocity.y *= -1;
+            this.body.velocity.x *= -1;
         }
         //pressing bottom right
         if (mouseClicX > realCenterBallX && mouseClicY > realCenterBallY) {
-        	this.body.velocity.y *= -1;
+            this.body.velocity.y *= -1;
         }
     }
     //the ball is going bottom right
     if (ballMoveX > 0 && ballMoveY > 0){
-    	//pressing top left
-    	if (mouseClicX < realCenterBallX && mouseClicY < realCenterBallY) {
-        	//nothing for instance
+        //pressing top left
+        if (mouseClicX < realCenterBallX && mouseClicY < realCenterBallY) {
+            //nothing for instance
         }
         //pressing top right
         if (mouseClicX > realCenterBallX && mouseClicY < realCenterBallY) {
-        	this.body.velocity.x *= -1;
+            this.body.velocity.x *= -1;
         }
         //pressing bottom left
         if (mouseClicX < realCenterBallX && mouseClicY > realCenterBallY) {
-        	this.body.velocity.y *= -1;
+            this.body.velocity.y *= -1;
         }
         //pressing bottom right
         if (mouseClicX > realCenterBallX && mouseClicY > realCenterBallY) {
-        	this.body.velocity.x *= -1;
-        	this.body.velocity.y *= -1;
+            this.body.velocity.x *= -1;
+            this.body.velocity.y *= -1;
         }
     }
 }
