@@ -25,8 +25,8 @@ function create() {
 
     game.physics.enable(ball, Phaser.Physics.ARCADE);
 
-    ball.body.velocity.x = -100;
-    ball.body.velocity.y = -100;
+    ball.body.velocity.x = -50;
+    ball.body.velocity.y = -50;
 
     ball.update = ballUpdate;
 
