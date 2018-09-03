@@ -1,38 +1,64 @@
 var game = new Phaser.Game(1280, 720, Phaser.CANVAS, 'game-demo', { preload: preload, create: create });
 
+var ballArray = [];
+var nbrStartBall = 16;//max 16
+var nbrBallNow = 0;
+var startVelocity = 100;
+
 function preload() {
     game.load.image('background', '/images/background.jpg');
-    game.load.image('ball', '/images/ball.png');
-    game.load.image('ball2', '/images/ball.png');
+    if (nbrStartBall > 0) {
+        game.load.image('ball', '/images/ball.png');
+    }
 }
-
-var ball;
 
 function create() {
     var backgroundImage = game.add.sprite(0, 0, 'background');
     backgroundImage.inputEnabled = true;
 
-    var ball = game.add.sprite(680, 360, 'ball');
-    var ball2 = game.add.sprite(600, 360, 'ball2');
-    ball.anchor.setTo(0.5, 0.5);
-    ball2.anchor.setTo(0.5, 0.5);
-    game.physics.enable(ball, Phaser.Physics.ARCADE);
-    game.physics.enable(ball2, Phaser.Physics.ARCADE);
-
-    ball.body.velocity.x = 100;
-    ball.body.velocity.y = 100;
-    ball2.body.velocity.x = -100;
-    ball2.body.velocity.y = -100;
-
-    ball.update = ballUpdate;
-    ball2.update = ballUpdate;
-
-    ball.inputEnabled = true;
-    ball2.inputEnabled = true;
-    ball.events.onInputDown.add(ballClick, ball);
-    ball2.events.onInputDown.add(ballClick, ball2);
-
-    backgroundImage.events.onInputDown.add(backgroundClick, backgroundImage, ball)
+    for (nbrBallNow = 0; nbrBallNow <= nbrStartBall; nbrBallNow++) {
+        if (nbrStartBall == 1) {
+            ballArray [nbrBallNow] = game.add.sprite(640, 360, 'ball');
+        }
+        else if (nbrStartBall == 2) {
+            ballArray [nbrBallNow] = game.add.sprite(680 + ((nbrBallNow - 1) * 80), 360, 'ball');
+        }
+        else if (nbrBallNow == 1 || nbrBallNow == 5 || nbrBallNow == 9 || nbrBallNow == 13) {
+            ballArray [nbrBallNow] = game.add.sprite(640 + ((Math.floor(nbrBallNow / 4.1) + 1) * 40), 360 + ((Math.floor(nbrBallNow / 4.1) + 1) * 40), 'ball');
+        }
+        else if (nbrBallNow == 2 || nbrBallNow == 6 || nbrBallNow == 10 || nbrBallNow == 14) {
+            ballArray [nbrBallNow] = game.add.sprite(640 - ((Math.floor(nbrBallNow / 4.1) + 1) * 40), 360 - ((Math.floor(nbrBallNow / 4.1) + 1) * 40), 'ball');   
+        }
+        else if (nbrBallNow == 3 || nbrBallNow == 7 || nbrBallNow == 11 || nbrBallNow == 15) {
+            ballArray [nbrBallNow] = game.add.sprite(640 - ((Math.floor(nbrBallNow / 4.1) + 1) * 40), 360 + ((Math.floor(nbrBallNow / 4.1) + 1) * 40), 'ball');
+        }
+        else {
+            ballArray [nbrBallNow] = game.add.sprite(640 + ((Math.floor(nbrBallNow / 4.1) + 1) * 40), 360 - ((Math.floor(nbrBallNow / 4.1) + 1) * 40), 'ball');   
+        }
+        
+        ballArray[nbrBallNow].anchor.setTo(0.5, 0.5);
+        game.physics.enable(ballArray[nbrBallNow], Phaser.Physics.ARCADE);
+        if (nbrBallNow == 1 || nbrBallNow == 5 || nbrBallNow == 9 || nbrBallNow == 13) {
+            ballArray[nbrBallNow].body.velocity.x = startVelocity;
+            ballArray[nbrBallNow].body.velocity.y = startVelocity;
+        }
+        else if (nbrBallNow == 2 || nbrBallNow == 6 || nbrBallNow == 10 || nbrBallNow == 14) {
+            ballArray[nbrBallNow].body.velocity.x = -startVelocity;
+            ballArray[nbrBallNow].body.velocity.y = -startVelocity;
+        }
+        else if (nbrBallNow == 3 || nbrBallNow == 7 || nbrBallNow == 11 || nbrBallNow == 15) {
+            ballArray[nbrBallNow].body.velocity.x = -startVelocity;
+            ballArray[nbrBallNow].body.velocity.y = startVelocity;
+        }
+        else {
+            ballArray[nbrBallNow].body.velocity.x = startVelocity;
+            ballArray[nbrBallNow].body.velocity.y = -startVelocity;   
+        }
+        ballArray[nbrBallNow].update = ballUpdate;
+        ballArray[nbrBallNow].inputEnabled = true;
+        ballArray[nbrBallNow].events.onInputDown.add(ballClick, ballArray[nbrBallNow]);
+        backgroundImage.events.onInputDown.add(backgroundClick, backgroundImage, ballArray[nbrBallNow])
+    }
 }
 
 function ballUpdate() {
@@ -55,14 +81,14 @@ function ballUpdate() {
     this.angle += this.body.velocity.x / 40;
 }
 
-function render() {
+/*function render() {
 
     game.debug.spriteInfo(ball, 32, 32);
     // game.debug.text('angularVelocity: ' + sprite.body.angularVelocity, 32, 200);
     // game.debug.text('angularAcceleration: ' + sprite.body.angularAcceleration, 32, 232);
     // game.debug.text('angularDrag: ' + sprite.body.angularDrag, 32, 264);
     // game.debug.text('deltaZ: ' + sprite.body.deltaZ(), 32, 296);
-}
+}*/
 
 function backgroundClick() {
 	var mouseClicX = game.input.mousePointer.x
