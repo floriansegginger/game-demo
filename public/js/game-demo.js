@@ -11,7 +11,6 @@ var iSeparateDistance = 75;
 var startVelocity = 50;
 
 var nbrBallNow;
-var factor;
 
 function preload() {
     game.load.image('background', '/images/background.jpg');
@@ -60,14 +59,14 @@ function create() {
                 ballArray.push(game.add.sprite(relativePositionX, relativePositionY, 'ball'));                
             }
 
+        //fix the center of the ball correctly to allow rotation of the object
         ballArray[nbrBallNow].anchor.setTo(0.5, 0.5);
         game.physics.enable(ballArray[nbrBallNow], Phaser.Physics.ARCADE);
-        factor = Math.sqrt(startVelocity * startVelocity * 2) / Math.sqrt((relativePositionX * relativePositionX) + (relativePositionY * relativePositionY))
         
-        /*WIP*/////////////////////////////////////////////////////////
-        ballArray[nbrBallNow].body.velocity.x = relativePositionX;
-        ballArray[nbrBallNow].body.velocity.y = relativePositionY;
-        ///////////////////////////////////////////////////////////////
+        //The balls move in opposition to the center
+        ballArray[nbrBallNow].body.velocity.x = relativePositionX - centerFieldX;
+        ballArray[nbrBallNow].body.velocity.y = relativePositionY - centerFieldY;
+
         ballArray[nbrBallNow].update = ballUpdate;
         ballArray[nbrBallNow].inputEnabled = true;
         ballArray[nbrBallNow].events.onInputDown.add(ballClick, ballArray[nbrBallNow]);
@@ -132,7 +131,7 @@ function ballClick() {
     var mouseClicY = game.input.mousePointer.y - realCenterBallY
 
     //the factor is used to maintain the same speed no matter where the user click on the ball
-    factor = Math.sqrt(startVelocity * startVelocity * 2) / Math.sqrt((mouseClicX * mouseClicX) + (mouseClicY * mouseClicY));
+    var factor = Math.sqrt(startVelocity * startVelocity * 2) / Math.sqrt((mouseClicX * mouseClicX) + (mouseClicY * mouseClicY));
 
     //the ball go in the opposite direction of the click
     this.body.velocity.x = - mouseClicX * factor
