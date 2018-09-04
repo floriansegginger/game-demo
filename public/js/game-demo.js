@@ -1,17 +1,21 @@
-var game = new Phaser.Game(1280, 720, Phaser.CANVAS, 'game-demo', { preload: preload, create: create });
+var game = new Phaser.Game(1280, 720, Phaser.CANVAS, 'game-demo', { preload: preload, create: create, update: update });
 
 var ballArray = [];
 
 ////////////////////////////////////////////////////////////////////
 /////////////////////     Global Parameter     /////////////////////
 ////////////////////////////////////////////////////////////////////
-var nbrStartBall = 20;
-var nbrBallQuadrant = 10;//Choose the max number of ball by Quadrant
+var nbrStartBall = 5;
+var nbrBallQuadrant = 4;//Choose the max number of ball by Quadrant
 var iSeparateDistance = 75;
-var startVelocity = 50;
+var startVelocity = 100;
 
-var nbrBallNow;
+var nbrBallNow;//counter nbr balls
+var factor;
 
+////////////////////////////////////////////////////////////////////
+///////////             Loadings and creation             //////////
+////////////////////////////////////////////////////////////////////
 function preload() {
     game.load.image('background', '/images/background.jpg');
     if (nbrStartBall > 0) {
@@ -31,7 +35,7 @@ function create() {
     var relativeSeparateDistance = iSeparateDistance;
 
     //Part used to spawn every ball set in "nbrStartBall"
-    for (nbrBallNow = 0; nbrBallNow <= nbrStartBall; nbrBallNow++) {
+    for (nbrBallNow = 0; nbrBallNow < nbrStartBall; nbrBallNow++) {
         //if only one ball, it is centered
         if (nbrStartBall == 1) {
             ballArray.push(game.add.sprite(centerFieldX, centerFieldY, 'ball'));
@@ -49,49 +53,59 @@ function create() {
                 //if the number of ball is sup. than "nbrBallQuadrant" the new balls will spawn in an other quadrant (increase radius)
                 if (nbrBallNow == 0) {iSeparateDistance = relativeSeparateDistance;}
                 else {iSeparateDistance = Math.ceil(nbrBallNow / nbrBallQuadrant) * relativeSeparateDistance;
-                    console.log(Math.ceil(nbrBallNow / nbrBallQuadrant))}
+                
+                //command to check in wich quadrant the next ball spawn
+                //console.log(Math.ceil(nbrBallNow / nbrBallQuadrant))
+                }
 
                 //Balls spawn with a radius corresponding to their quadrant
                 //Their position is centerfield centered 
                 relativePositionX = centerFieldX + (iSeparateDistance * Math.cos(relativeRadiant * (nbrBallNow) * Math.PI / 180))
                 relativePositionY = centerFieldY + (iSeparateDistance * Math.sin(relativeRadiant * (nbrBallNow) * Math.PI / 180))
+                
+                //command to check the starting position of balls. The position is relative to the center
                 console.log("x : ", relativePositionX - centerFieldX, "y : ", relativePositionY - centerFieldY)
+                
+                //add a ball to the list "ballArray"
                 ballArray.push(game.add.sprite(relativePositionX, relativePositionY, 'ball'));                
             }
-
         //fix the center of the ball correctly to allow rotation of the object
         ballArray[nbrBallNow].anchor.setTo(0.5, 0.5);
+
         game.physics.enable(ballArray[nbrBallNow], Phaser.Physics.ARCADE);
         
+        //factor serve to conserve the "startVeloc"
+        factor = (Math.sqrt(Math.pow(startVelocity, 2) * 2) / Math.sqrt(((relativePositionX - centerFieldX) * (relativePositionX - centerFieldX)) + ((relativePositionY - centerFieldY) * (relativePositionY - centerFieldY))))
+        
         //The balls move in opposition to the center
-        ballArray[nbrBallNow].body.velocity.x = relativePositionX - centerFieldX;
-        ballArray[nbrBallNow].body.velocity.y = relativePositionY - centerFieldY;
+        ballArray[nbrBallNow].body.velocity.x = (relativePositionX - centerFieldX) * factor;
+        ballArray[nbrBallNow].body.velocity.y = (relativePositionY - centerFieldY) * factor;
 
         ballArray[nbrBallNow].update = ballUpdate;
         ballArray[nbrBallNow].inputEnabled = true;
-        ballArray[nbrBallNow].events.onInputDown.add(ballClick, ballArray[nbrBallNow]);
-    }
+        ballArray[nbrBallNow].events.onInputDown.add(ballClick, ballArray[nbrBallNow]);    
+        }
+
     backgroundImage.events.onInputDown.add(backgroundClick, backgroundImage)       
 }
 
+////////////////////////////////////////////////////////////////////
+///////////                Dynamic actions                //////////
+////////////////////////////////////////////////////////////////////
 function ballUpdate() {
+    var distance;
     if (this.body.position.y + this.body.height > game.height - 70) {
         this.body.velocity.y *= -1;
-        console.log("Boing Bottom!")
     }
     if (this.body.position.y < 70) {
         this.body.velocity.y *= -1;
-        console.log("Boing Top!")
     }
     if (this.body.position.x + this.body.width > game.width - 90) {
         this.body.velocity.x *= -1;
-        console.log("Boing right!")
     }
     if (this.body.position.x < 90) {
         this.body.velocity.x *= -1;
-        console.log("Boing Left!")
     }
-    this.angle += this.body.velocity.x / 60;
 }
 
 /*function render() {
@@ -104,21 +118,27 @@ function ballUpdate() {
 }*/
 
 function backgroundClick() {
-	var mouseClicX = game.input.mousePointer.x
-    var mouseClicY = game.input.mousePointer.y
+    nbrBallNow++;
+	var mouseClicX = game.input.mousePointer.x + ballArray[nbrBallNow].width/2
+    var mouseClicY = game.input.mousePointer.y + ballArray[nbrBallNow].height/2
 
-    var ball = game.add.sprite(mouseClicX, mouseClicY, 'ball');
-    ball.anchor.setTo(0.5, 0.5);
-    game.physics.enable(ball, Phaser.Physics.ARCADE);
-
-    ball.body.velocity.x = startVelocity;
-    ball.body.velocity.y = startVelocity;
-
-    ball.update = ballUpdate;
-
-    ball.inputEnabled = true;
-    ball.events.onInputDown.add(ballClick, ball);
+    /////////////////////////////////////////////
+    //                 WIP                     //
+    /////////////////////////////////////////////
     
+
+    //add a ball to the list "ballArray"
+    ballArray.push(game.add.sprite((mouseClicX, mouseClicY, 'ball')));
+    ballArray[nbrBallNow].anchor.setTo(0.5, 0.5);
+    game.physics.enable(ballArray[nbrBallNow], Phaser.Physics.ARCADE);
+
+    ballArray[nbrBallNow].body.velocity.x = startVelocity;
+    ballArray[nbrBallNow].body.velocity.y = startVelocity;
+
+    ballArray[nbrBallNow].update = ballUpdate;
+
+    ballArray[nbrBallNow].inputEnabled = true;
+    ballArray[nbrBallNow].events.onInputDown.add(ballClick, ballArray[nbrBallNow]);
 }
 
 function ballClick() {
@@ -130,10 +150,34 @@ function ballClick() {
     var mouseClicX = game.input.mousePointer.x - realCenterBallX
     var mouseClicY = game.input.mousePointer.y - realCenterBallY
 
-    //the factor is used to maintain the same speed no matter where the user click on the ball
-    var factor = Math.sqrt(startVelocity * startVelocity * 2) / Math.sqrt((mouseClicX * mouseClicX) + (mouseClicY * mouseClicY));
+    //the factor serve to maintain the same speed no matter where the user click on the ball
+    factor = Math.sqrt(startVelocity * startVelocity * 2) / Math.sqrt((mouseClicX * mouseClicX) + (mouseClicY * mouseClicY));
 
     //the ball go in the opposite direction of the click
     this.body.velocity.x = - mouseClicX * factor
     this.body.velocity.y = - mouseClicY * factor
 }
+
+function update() {
+    var obj1;
+    var obj2;
+
+    if (nbrStartBall > 1) {
+        for (var i = 0; i <= nbrStartBall; i++) {
+            obj1 = ballArray[i];
+            //console.log(i)
+            for (var j = 0; j <= nbrStartBall; j++) {
+                if (i != j) {
+                    obj2 = ballArray [j];
+                    //console.log(j)
+                    game.physics.arcade.collide(obj1, obj2, collisionHandler, null, this);    
+                }
+            }
+        }
+    }
+}
+
+function collisionHandler (obj1, obj2) {
+    obj2.splice()
+}
+
