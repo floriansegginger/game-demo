@@ -1,11 +1,17 @@
 var game = new Phaser.Game(1280, 720, Phaser.CANVAS, 'game-demo', { preload: preload, create: create });
 
 var ballArray = [];
-var nbrStartBall = 7;//max 40
+
+////////////////////////////////////////////////////////////////////
+/////////////////////     Global Parameter     /////////////////////
+////////////////////////////////////////////////////////////////////
+var nbrStartBall = 20;
+var nbrBallQuadrant = 10;//Choose the max number of ball by Quadrant
+var iSeparateDistance = 75;
+var startVelocity = 50;
+
 var nbrBallNow;
-var startVelocity = 0;
-var centerFieldX;
-var centerFieldY;
+var factor;
 
 function preload() {
     game.load.image('background', '/images/background.jpg');
@@ -23,117 +29,51 @@ function create() {
     var relativeRadiant;
     var relativePositionX;
     var relativePositionY;
-    var iSeparateDistance = 70;
     var relativeSeparateDistance = iSeparateDistance;
-    var numQuadrant = 1;
 
-    for (nbrBallNow = 0; nbrBallNow < nbrStartBall; nbrBallNow++) {
+    //Part used to spawn every ball set in "nbrStartBall"
+    for (nbrBallNow = 0; nbrBallNow <= nbrStartBall; nbrBallNow++) {
+        //if only one ball, it is centered
         if (nbrStartBall == 1) {
             ballArray.push(game.add.sprite(centerFieldX, centerFieldY, 'ball'));
         }
         else {
-                if (nbrStartBall % 8 == 0) {
-                    relativeRadiant = (1 / 8) * 360;
+                //If a quadrant countain "nbrBallQuadrant" balls or if the last quadrant is not reached
+                if (nbrStartBall % nbrBallQuadrant == 0 || Math.ceil(nbrBallNow / nbrBallQuadrant) < Math.ceil(nbrStartBall / nbrBallQuadrant)) {
+                    relativeRadiant = (1 / nbrBallQuadrant) * 360;
                 }
+                //when it is the last quadrant, the radiant will be split between the last balls
                 else {
-                    relativeRadiant = (1 / (nbrStartBall % 8)) * 360;
+                    relativeRadiant = (1 / (nbrStartBall % nbrBallQuadrant)) * 360;    
                 }
-                iSeparateDistance = relativeSeparateDistance * numQuadrant;
+                
+                //if the number of ball is sup. than "nbrBallQuadrant" the new balls will spawn in an other quadrant (increase radius)
+                if (nbrBallNow == 0) {iSeparateDistance = relativeSeparateDistance;}
+                else {iSeparateDistance = Math.ceil(nbrBallNow / nbrBallQuadrant) * relativeSeparateDistance;
+                    console.log(Math.ceil(nbrBallNow / nbrBallQuadrant))}
+
+                //Balls spawn with a radius corresponding to their quadrant
+                //Their position is centerfield centered 
                 relativePositionX = centerFieldX + (iSeparateDistance * Math.cos(relativeRadiant * (nbrBallNow) * Math.PI / 180))
                 relativePositionY = centerFieldY + (iSeparateDistance * Math.sin(relativeRadiant * (nbrBallNow) * Math.PI / 180))
                 console.log("x : ", relativePositionX - centerFieldX, "y : ", relativePositionY - centerFieldY)
-                ballArray.push(game.add.sprite(relativePositionX, relativePositionY, 'ball'));
-                if (nbrBallNow % 8 == 0) {
-                    console.log("Ball Spawn Position, Quadrant n: ", numQuadrant)
-                    numQuadrant++;
-                    console.log(iSeparateDistance)
-                }
-                
+                ballArray.push(game.add.sprite(relativePositionX, relativePositionY, 'ball'));                
             }
+
         ballArray[nbrBallNow].anchor.setTo(0.5, 0.5);
         game.physics.enable(ballArray[nbrBallNow], Phaser.Physics.ARCADE);
-        ballArray[nbrBallNow].body.velocity.x = startVelocity;
-        ballArray[nbrBallNow].body.velocity.y = startVelocity;
+        factor = Math.sqrt(startVelocity * startVelocity * 2) / Math.sqrt((relativePositionX * relativePositionX) + (relativePositionY * relativePositionY))
+        
+        /*WIP*/////////////////////////////////////////////////////////
+        ballArray[nbrBallNow].body.velocity.x = relativePositionX;
+        ballArray[nbrBallNow].body.velocity.y = relativePositionY;
+        ///////////////////////////////////////////////////////////////
         ballArray[nbrBallNow].update = ballUpdate;
         ballArray[nbrBallNow].inputEnabled = true;
         ballArray[nbrBallNow].events.onInputDown.add(ballClick, ballArray[nbrBallNow]);
     }
     backgroundImage.events.onInputDown.add(backgroundClick, backgroundImage)       
 }
-    
-
-    /*for (nbrBallNow = 0; nbrBallNow < nbrStartBall; nbrBallNow++) {
-        if (nbrStartBall == 1) {
-            ballArray.push(game.add.sprite(centerFieldX, centerFieldY, 'ball'));
-        }
-        else if (nbrStartBall == 2) {
-            ballArray.push(game.add.sprite(680 + ((nbrBallNow - 1) * 80), 360, 'ball'));
-        }
-        else if (nbrBallNow == 1 + (8 * (Math.floor(nbrBallNow / 8.01)))) {
-            ballArray.push(game.add.sprite(640 + ((Math.floor(nbrBallNow / 8.01) + 1) * 50), 360 + ((Math.floor(nbrBallNow / 8.01) + 1) * 50), 'ball'));
-        }
-        else if (nbrBallNow == 2 + (8 * (Math.floor(nbrBallNow / 8.01)))) {
-            ballArray.push(game.add.sprite(640 - ((Math.floor(nbrBallNow / 8.01) + 1) * 50), 360 - ((Math.floor(nbrBallNow / 8.01) + 1) * 50), 'ball'));   
-        }
-        else if (nbrBallNow == 3 + (8 * (Math.floor(nbrBallNow / 8.01)))) {
-            ballArray.push(game.add.sprite(640 - ((Math.floor(nbrBallNow / 8.01) + 1) * 50), 360 + ((Math.floor(nbrBallNow / 8.01) + 1) * 50), 'ball'));
-        }
-        else if (nbrBallNow == 4 + (8 * (Math.floor(nbrBallNow / 8.01)))) {
-            ballArray.push(game.add.sprite(640 + ((Math.floor(nbrBallNow / 8.01) + 1) * 50), 360 - ((Math.floor(nbrBallNow / 8.01) + 1) * 50), 'ball'));   
-        }
-        else if (nbrBallNow == 5 + (8 * (Math.floor(nbrBallNow / 8.01)))) {
-            ballArray.push(game.add.sprite(640 + ((Math.floor(nbrBallNow / 8.01) + 1) * 70), 360, 'ball'));   
-        }
-        else if (nbrBallNow == 6 + (8 * (Math.floor(nbrBallNow / 8.01)))) {
-            ballArray.push(game.add.sprite(640, 360 - ((Math.floor(nbrBallNow / 8.01) + 1) * 70), 'ball'));
-        }
-        else if (nbrBallNow == 7 + (8 * (Math.floor(nbrBallNow / 8.01)))) {
-            ballArray.push(game.add.sprite(640 - ((Math.floor(nbrBallNow / 8.01) + 1) * 70), 360, 'ball'));
-        }
-        else {
-            ballArray.push(game.add.sprite(640, 360 + ((Math.floor(nbrBallNow / 8.01) + 1) * 70), 'ball'));
-        }
-        
-
-        ballArray[nbrBallNow].anchor.setTo(0.5, 0.5);
-        game.physics.enable(ballArray[nbrBallNow], Phaser.Physics.ARCADE);
-        if (nbrBallNow == 1 + (8 * (Math.floor(nbrBallNow / 8.01)))) {
-            ballArray[nbrBallNow].body.velocity.x = startVelocity;
-            ballArray[nbrBallNow].body.velocity.y = startVelocity;
-        }
-        else if (nbrBallNow == 2 + (8 * (Math.floor(nbrBallNow / 8.01)))) {
-            ballArray[nbrBallNow].body.velocity.x = -startVelocity;
-            ballArray[nbrBallNow].body.velocity.y = -startVelocity;
-        }
-        else if (nbrBallNow == 3 + (8 * (Math.floor(nbrBallNow / 8.01)))) {
-            ballArray[nbrBallNow].body.velocity.x = -startVelocity;
-            ballArray[nbrBallNow].body.velocity.y = startVelocity;
-        }
-       else if (nbrBallNow == 4 + (8 * (Math.floor(nbrBallNow / 8.01)))) {
-            ballArray[nbrBallNow].body.velocity.x = startVelocity;
-            ballArray[nbrBallNow].body.velocity.y = -startVelocity;   
-        }
-        else if (nbrBallNow == 5 + (8 * (Math.floor(nbrBallNow / 8.01)))) {
-            ballArray[nbrBallNow].body.velocity.x = Math.sqrt(startVelocity * startVelocity * 2);
-            ballArray[nbrBallNow].body.velocity.y = 0;
-        }
-        else if (nbrBallNow == 6 + (8 * (Math.floor(nbrBallNow / 8.01)))) {
-            ballArray[nbrBallNow].body.velocity.x = 0;
-            ballArray[nbrBallNow].body.velocity.y = -Math.sqrt(startVelocity * startVelocity * 2);
-        }
-        else if (nbrBallNow == 7 + (8 * (Math.floor(nbrBallNow / 8.01)))) {
-            ballArray[nbrBallNow].body.velocity.x = -Math.sqrt(startVelocity * startVelocity * 2);
-            ballArray[nbrBallNow].body.velocity.y = 0;           
-        }
-        else{
-            ballArray[nbrBallNow].body.velocity.x = 0;
-            ballArray[nbrBallNow].body.velocity.y = Math.sqrt(startVelocity * startVelocity * 2);
-             
-        }
-        ballArray[nbrBallNow].update = ballUpdate;
-        ballArray[nbrBallNow].inputEnabled = true;
-        ballArray[nbrBallNow].events.onInputDown.add(ballClick, ballArray[nbrBallNow]);   
-    }*/
 
 function ballUpdate() {
     if (this.body.position.y + this.body.height > game.height - 70) {
@@ -192,7 +132,7 @@ function ballClick() {
     var mouseClicY = game.input.mousePointer.y - realCenterBallY
 
     //the factor is used to maintain the same speed no matter where the user click on the ball
-    var factor = Math.sqrt(startVelocity * startVelocity * 2) / Math.sqrt((mouseClicX * mouseClicX) + (mouseClicY * mouseClicY))
+    factor = Math.sqrt(startVelocity * startVelocity * 2) / Math.sqrt((mouseClicX * mouseClicX) + (mouseClicY * mouseClicY));
 
     //the ball go in the opposite direction of the click
     this.body.velocity.x = - mouseClicX * factor
