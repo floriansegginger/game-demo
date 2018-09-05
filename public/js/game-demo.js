@@ -5,8 +5,8 @@ var ballArray = [];
 ////////////////////////////////////////////////////////////////////
 /////////////////////     Global Parameter     /////////////////////
 ////////////////////////////////////////////////////////////////////
-var nbrStartBall = 10;
-var nbrBallQuadrant = 4;//Choose the max number of ball by Quadrant
+var nbrStartBall = 8;
+var nbrBallQuadrant = 8;//Choose the max number of ball by Quadrant
 var iSeparateDistance = 75;
 var startVelocity = 50;
 
@@ -64,7 +64,7 @@ function create() {
                 relativePositionY = centerFieldY + (iSeparateDistance * Math.sin(relativeRadiant * (nbrBallNow) * Math.PI / 180))
                 
                 //command to check the starting position of balls. The position is relative to the center
-                console.log("x : ", relativePositionX - centerFieldX, "y : ", relativePositionY - centerFieldY)
+                //console.log("x : ", relativePositionX - centerFieldX, "y : ", relativePositionY - centerFieldY)
                 
                 //add a ball to the list "ballArray"
                 ballArray.push(game.add.sprite(relativePositionX, relativePositionY, 'ball'));                
@@ -159,24 +159,34 @@ function ballClick() {
 }
 
 function update() {
+    var relativePositionIX;
+    var relativePositionIY;
+    var relativePositionJX;
+    var relativePositionJY;
+
     if (nbrBallNow > 1) {
-        for (var i = 0; i < nbrBallNow; i++) {
-            for (var j = 0; j < nbrBallNow; j++) {
-                if (i != j) {
-                    if (ballArray[i].body.position.x - ballArray[j].body.position.x < ballArray[i].body.width/2 && ballArray[i].body.position.x - ballArray[j].body.position.x > -ballArray[i].body.width/2) {
-                        if (ballArray[i].body.position.y - ballArray[j].body.position.y < ballArray[i].body.width/2 && ballArray[i].body.position.y - ballArray[j].body.position.y > -ballArray[i].body.height/2) {
-                        
-                        console.log("collision ball n :", i, " and", j)
-                        ballArray[i].destroy();
-                        ballArray.splice(i,1);
-                        ballArray[j-1].destroy();
-                        ballArray.splice(j-1,1);
-                        nbrBallNow-=2;
-                        console.log(ballArray)
+        for (var i = nbrBallNow-1; nbrBallNow > 1; i--) {
+            if (i >= 0) {
+                for (var j = nbrBallNow-1; nbrBallNow > 1; j--) {
+                    if (i != j && j >= 0) {
+                        relativePositionIX = ballArray[i].body.position.x;
+                        relativePositionIY = ballArray[i].body.position.y;
+                        relativePositionJX = ballArray[j].body.position.x;
+                        relativePositionJY = ballArray[j].body.position.y;
+                        if (relativePositionIX - relativePositionJX < ballArray[i].body.width && relativePositionIX - relativePositionJX > -ballArray[i].body.width) {
+                            if (relativePositionIY - relativePositionJY < ballArray[i].body.width && relativePositionIY - relativePositionJY > -ballArray[i].body.height) {
+                            console.log("collision ball n :", i, " and", j)
+                            ballArray[i].destroy();
+                            ballArray[j].destroy();
+                            ballArray.splice(2,2);
+                            nbrBallNow-=2;
+                            console.log(ballArray)
+                            }
                         }
                     }
                 }
             }
+            
         }
     }
 }
