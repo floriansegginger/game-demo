@@ -1,14 +1,14 @@
-var game = new Phaser.Game(1280, 720, Phaser.CANVAS, 'game-demo', { preload: preload, create: create, update: update });
+var game = new Phaser.Game(1280, 720, Phaser.CANVAS, 'game-demo', { preload: preload, create: create, update: update});
 
 var ballArray = [];
 
 ////////////////////////////////////////////////////////////////////
 /////////////////////     Global Parameter     /////////////////////
 ////////////////////////////////////////////////////////////////////
-var nbrStartBall = 5;
+var nbrStartBall = 10;
 var nbrBallQuadrant = 4;//Choose the max number of ball by Quadrant
 var iSeparateDistance = 75;
-var startVelocity = 100;
+var startVelocity = 50;
 
 var nbrBallNow;//counter nbr balls
 var factor;
@@ -35,7 +35,7 @@ function create() {
     var relativeSeparateDistance = iSeparateDistance;
 
     //Part used to spawn every ball set in "nbrStartBall"
-    for (nbrBallNow = 0; nbrBallNow < nbrStartBall; nbrBallNow++) {
+    for (nbrBallNow = 1; nbrBallNow <= nbrStartBall; nbrBallNow++) {
         //if only one ball, it is centered
         if (nbrStartBall == 1) {
             ballArray.push(game.add.sprite(centerFieldX, centerFieldY, 'ball'));
@@ -70,23 +70,23 @@ function create() {
                 ballArray.push(game.add.sprite(relativePositionX, relativePositionY, 'ball'));                
             }
         //fix the center of the ball correctly to allow rotation of the object
-        ballArray[nbrBallNow].anchor.setTo(0.5, 0.5);
+        ballArray[nbrBallNow-1].anchor.setTo(0.5, 0.5);
 
-        game.physics.enable(ballArray[nbrBallNow], Phaser.Physics.ARCADE);
+        game.physics.enable(ballArray[nbrBallNow-1], Phaser.Physics.ARCADE);
         
         //factor serve to conserve the "startVeloc"
         factor = (Math.sqrt(Math.pow(startVelocity, 2) * 2) / Math.sqrt(((relativePositionX - centerFieldX) * (relativePositionX - centerFieldX)) + ((relativePositionY - centerFieldY) * (relativePositionY - centerFieldY))))
         
         //The balls move in opposition to the center
-        ballArray[nbrBallNow].body.velocity.x = (relativePositionX - centerFieldX) * factor;
-        ballArray[nbrBallNow].body.velocity.y = (relativePositionY - centerFieldY) * factor;
+        ballArray[nbrBallNow-1].body.velocity.x = (relativePositionX - centerFieldX) * factor;
+        ballArray[nbrBallNow-1].body.velocity.y = (relativePositionY - centerFieldY) * factor;
 
-        ballArray[nbrBallNow].update = ballUpdate;
-        ballArray[nbrBallNow].inputEnabled = true;
-        ballArray[nbrBallNow].events.onInputDown.add(ballClick, ballArray[nbrBallNow]);    
+        ballArray[nbrBallNow-1].update = ballUpdate;
+        ballArray[nbrBallNow-1].inputEnabled = true;
+        ballArray[nbrBallNow-1].events.onInputDown.add(ballClick, ballArray[nbrBallNow-1]);  
         }
-
-    backgroundImage.events.onInputDown.add(backgroundClick, backgroundImage)       
+        nbrBallNow -= 1;
+    backgroundImage.events.onInputDown.add(backgroundClick, backgroundImage)     
 }
 
 ////////////////////////////////////////////////////////////////////
@@ -151,7 +151,7 @@ function ballClick() {
     var mouseClicY = game.input.mousePointer.y - realCenterBallY
 
     //the factor serve to maintain the same speed no matter where the user click on the ball
-    factor = Math.sqrt(startVelocity * startVelocity * 2) / Math.sqrt((mouseClicX * mouseClicX) + (mouseClicY * mouseClicY));
+    factor = Math.sqrt(Math.pow(startVelocity, 2) * 2) / Math.sqrt((Math.pow(mouseClicX, 2) + (Math.pow(mouseClicY, 2))));
 
     //the ball go in the opposite direction of the click
     this.body.velocity.x = - mouseClicX * factor
@@ -159,25 +159,25 @@ function ballClick() {
 }
 
 function update() {
-    var obj1;
-    var obj2;
-
-    if (nbrStartBall > 1) {
-        for (var i = 0; i <= nbrStartBall; i++) {
-            obj1 = ballArray[i];
-            //console.log(i)
-            for (var j = 0; j <= nbrStartBall; j++) {
+    if (nbrBallNow > 1) {
+        for (var i = 0; i < nbrBallNow; i++) {
+            for (var j = 0; j < nbrBallNow; j++) {
                 if (i != j) {
-                    obj2 = ballArray [j];
-                    //console.log(j)
-                    game.physics.arcade.collide(obj1, obj2, collisionHandler, null, this);    
+                    if (ballArray[i].body.position.x - ballArray[j].body.position.x < ballArray[i].body.width/2 && ballArray[i].body.position.x - ballArray[j].body.position.x > -ballArray[i].body.width/2) {
+                        if (ballArray[i].body.position.y - ballArray[j].body.position.y < ballArray[i].body.width/2 && ballArray[i].body.position.y - ballArray[j].body.position.y > -ballArray[i].body.height/2) {
+                        
+                        console.log("collision ball n :", i, " and", j)
+                        ballArray[i].destroy();
+                        ballArray.splice(i,1);
+                        ballArray[j-1].destroy();
+                        ballArray.splice(j-1,1);
+                        nbrBallNow-=2;
+                        console.log(ballArray)
+                        }
+                    }
                 }
             }
         }
     }
-}
-
-function collisionHandler (obj1, obj2) {
-    obj2.splice()
 }
 
