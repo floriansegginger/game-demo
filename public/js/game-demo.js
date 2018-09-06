@@ -4,12 +4,12 @@ var game = new Phaser.Game(1280, 720, Phaser.CANVAS, 'game-demo', { preload: pre
 /////////////////////     Global Parameter     /////////////////////
 ////////////////////////////////////////////////////////////////////
 var ballArray = [];
-var nbrStartBall = 25;
-var nbrBallQuadrant = 50;//Choose the max number of ball by Quadrant
+var nbrStartBall = 1;
+var nbrBallQuadrant = 1;//Choose the max number of ball by Quadrant
 var scaleFactor = 1;      
                         
 var iSeparateDistance = 75;
-var startVelocity = 300;
+var startVelocity = 100;
 
 var indexMaxBallList;//counter nbr balls
 var factor;
@@ -22,6 +22,7 @@ var text;
 ////////////////////////////////////////////////////////////////////
 function preload() {
     game.load.image('background', '/images/background.jpg');
+    game.load.image('soccerplayer', '/images/soccerplayer.png')
     if (nbrStartBall > 0) {
         game.load.image('ball', '/images/ball.png');
     }
@@ -82,6 +83,8 @@ function create() {
         //if (indexMaxBallList > 0) {console.log("x : ", relativePositionX - centerFieldX, "y : ", relativePositionY - centerFieldY)}
         
         //add a ball to the list "ballArray"
+        //if (relativePositionX < game.width && relativePositionX > 0 && relativePositionY < game.height && relativePositionY > 0) { 
+        //}
         ballArray.push({
             id: indexMaxBallList,
             sprite: game.add.sprite(relativePositionX, relativePositionY, 'ball')
@@ -107,7 +110,6 @@ function create() {
             ballArray[indexMaxBallList].sprite.inputEnabled = true;
             ballArray[indexMaxBallList].sprite.events.onInputDown.add(ballClick, ballArray[indexMaxBallList].sprite);  
         }
-        
     }
         
     //destroy correct the number of ball
