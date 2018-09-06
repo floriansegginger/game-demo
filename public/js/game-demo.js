@@ -1,20 +1,21 @@
 var game = new Phaser.Game(1280, 720, Phaser.CANVAS, 'game-demo', { preload: preload, create: create, update: update});
 
-var ballArray = [];
-
 ////////////////////////////////////////////////////////////////////
 /////////////////////     Global Parameter     /////////////////////
 ////////////////////////////////////////////////////////////////////
-var nbrStartBall = 2;
+var ballArray = [];
+var nbrStartBall = 25;
 var nbrBallQuadrant = 50;//Choose the max number of ball by Quadrant
 var scaleFactor = 1;      
                         
 var iSeparateDistance = 75;
-var startVelocity = 150;
+var startVelocity = 300;
 
 var indexMaxBallList;//counter nbr balls
 var factor;
 var countDestroyedBall = -1;
+
+var text;
 
 ////////////////////////////////////////////////////////////////////
 ///////////             Loadings and creation             //////////
@@ -36,6 +37,11 @@ function create() {
     var relativePositionX = centerFieldX;
     var relativePositionY = centerFieldY;
     var relativeSeparateDistance = iSeparateDistance;
+
+    text = game.add.text(game.width-350, 0, "SCORE : " + 0,{
+    font: "45px Arial",
+    fill: "#ffffff"
+    });;
 
     if (nbrBallQuadrant > 9 && nbrStartBall > 9) {
         scaleFactor = 9 / nbrBallQuadrant;
@@ -143,11 +149,6 @@ function backgroundClick() {
     var mouseClicY = game.input.mousePointer.y;
     var index;
 
-    /////////////////////////////////////////////
-    //                 WIP                     //
-    /////////////////////////////////////////////
-    
-
     //add a ball to the list "ballArray"
     ballArray.push({
             id: indexMaxBallList,
@@ -191,11 +192,15 @@ function ballClick() {
     this.body.velocity.y = - mouseClicY * factor
 }
 
+////////////////////////////////////////////////////////////////////
+///////////               Collision control               //////////
+////////////////////////////////////////////////////////////////////
 function update() {
     var relativePositionIX;
     var relativePositionIY;
     var relativePositionJX;
     var relativePositionJY;
+    
     
     if (indexMaxBallList > 1) {
         for (var i = ballArray.length-1; ballArray.length >= 0 && i >= 0 && i < ballArray.length; i--) {
@@ -208,12 +213,17 @@ function update() {
                     if (Math.sqrt(Math.pow((relativePositionIX - relativePositionJX),2) + Math.pow((relativePositionIY - relativePositionJY),2)) < ballArray[i].sprite.width) {
                         destruction(ballArray[i].id,ballArray[j].id);
                         i-=2;
+                        text.setText("SCORE : " + countDestroyedBall*25);
                     }
                 }
             }           
         }
     }
 }
+
+////////////////////////////////////////////////////////////////////
+///////////         Destruction of 1 or two ball          //////////
+////////////////////////////////////////////////////////////////////
 function destruction(id1, id2) {
     var destroyIndex = ballArray.findIndex((element) => {
     return element.id === id1;  
