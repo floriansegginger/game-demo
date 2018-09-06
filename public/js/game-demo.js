@@ -5,17 +5,16 @@ var ballArray = [];
 ////////////////////////////////////////////////////////////////////
 /////////////////////     Global Parameter     /////////////////////
 ////////////////////////////////////////////////////////////////////
-var nbrStartBall = 1;
+var nbrStartBall = 2;
 var nbrBallQuadrant = 50;//Choose the max number of ball by Quadrant
 var scaleFactor = 1;      
                         
 var iSeparateDistance = 75;
-var startVelocity = 0;
+var startVelocity = 150;
 
 var indexMaxBallList;//counter nbr balls
 var factor;
-var destroyBallIndex = []
-var countDestroyedBall = 0;
+var countDestroyedBall = -1;
 
 ////////////////////////////////////////////////////////////////////
 ///////////             Loadings and creation             //////////
@@ -100,12 +99,13 @@ function create() {
 
             ballArray[indexMaxBallList].sprite.update = ballUpdate;
             ballArray[indexMaxBallList].sprite.inputEnabled = true;
-            ballArray[indexMaxBallList].sprite.events.onInputDown.add(ballClick, ballArray[indexMaxBallList]);  
+            ballArray[indexMaxBallList].sprite.events.onInputDown.add(ballClick, ballArray[indexMaxBallList].sprite);  
         }
         
     }
-        //destroy correct the number of ball
-        destruction(0,null);
+        
+    //destroy correct the number of ball
+    destruction(0,null);
     backgroundImage.events.onInputDown.add(backgroundClick, backgroundImage)
 }
 
@@ -141,6 +141,7 @@ function backgroundClick() {
     indexMaxBallList++;
 	var mouseClicX = game.input.mousePointer.x;
     var mouseClicY = game.input.mousePointer.y;
+    var index;
 
     /////////////////////////////////////////////
     //                 WIP                     //
@@ -148,17 +149,29 @@ function backgroundClick() {
     
 
     //add a ball to the list "ballArray"
-    ballArray.push(game.add.sprite((mouseClicX, mouseClicY, 'ball')));
-    ballArray[indexMaxBallList].anchor.setTo(0.5, 0.5);
-    game.physics.enable(ballArray[indexMaxBallList-1], Phaser.Physics.ARCADE);
+    ballArray.push({
+            id: indexMaxBallList,
+            sprite: game.add.sprite(mouseClicX, mouseClicY, 'ball')
+    });
 
-    ballArray[indexMaxBallList].body.velocity.x = startVelocity;
-    ballArray[indexMaxBallList].body.velocity.y = startVelocity;
+    index = ballArray.findIndex((element) => {
+    return element.id === indexMaxBallList;  
+    })
 
-    ballArray[indexMaxBallList].update = ballUpdate;
+    ballArray[index].sprite.scale.x = scaleFactor;
+    ballArray[index].sprite.scale.y = scaleFactor;     
 
-    ballArray[indexMaxBallList].inputEnabled = true;
-    ballArray[indexMaxBallList].events.onInputDown.add(ballClick, ballArray[indexMaxBallList]);
+    ballArray[index].sprite.anchor.setTo(0.5, 0.5);
+
+    game.physics.enable(ballArray[index].sprite, Phaser.Physics.ARCADE);
+
+    ballArray[index].sprite.body.velocity.x = startVelocity;
+    ballArray[index].sprite.body.velocity.y = startVelocity;
+
+    ballArray[index].sprite.update = ballUpdate;
+
+    ballArray[index].sprite.inputEnabled = true;
+    ballArray[index].sprite.events.onInputDown.add(ballClick, ballArray[index].sprite);
 }
 
 function ballClick() {
