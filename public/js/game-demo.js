@@ -5,13 +5,18 @@ var ballArray = [];
 ////////////////////////////////////////////////////////////////////
 /////////////////////     Global Parameter     /////////////////////
 ////////////////////////////////////////////////////////////////////
-var nbrStartBall = 8;
-var nbrBallQuadrant = 8;//Choose the max number of ball by Quadrant
+var nbrStartBall = 10;
+var nbrBallQuadrant = 10;//Choose the max number of ball by Quadrant
+var scaleFactor = 1;      
+                        
 var iSeparateDistance = 75;
-var startVelocity = 50;
+var startVelocity = 150;
 
-var nbrBallNow;//counter nbr balls
+var indexMaxBallList;//counter nbr balls
 var factor;
+var destroyBall = false;
+var destroyBallIndex = []
+var countDestroyedBall = 0;
 
 ////////////////////////////////////////////////////////////////////
 ///////////             Loadings and creation             //////////
@@ -34,16 +39,20 @@ function create() {
     var relativePositionY;
     var relativeSeparateDistance = iSeparateDistance;
 
+    if (nbrBallQuadrant > 9 && nbrStartBall > 9) {
+        scaleFactor = 9 / nbrBallQuadrant;
+    }
+
     //Part used to spawn every ball set in "nbrStartBall"
-    for (nbrBallNow = 1; nbrBallNow <= nbrStartBall; nbrBallNow++) {
+    for (indexMaxBallList = 0; indexMaxBallList <= nbrStartBall; indexMaxBallList++) {
         //if only one ball, it is centered
         if (nbrStartBall == 1) {
             ballArray.push(game.add.sprite(centerFieldX, centerFieldY, 'ball'));
         }
         else {
                 //If a quadrant countain "nbrBallQuadrant" balls or if the last quadrant is not reached
-                if (nbrStartBall % nbrBallQuadrant == 0 || Math.ceil(nbrBallNow / nbrBallQuadrant) < Math.ceil(nbrStartBall / nbrBallQuadrant)) {
-                    relativeRadiant = (1 / nbrBallQuadrant) * 360;
+                if (nbrStartBall % nbrBallQuadrant == 0 || Math.ceil(indexMaxBallList / nbrBallQuadrant) < Math.ceil(nbrStartBall / nbrBallQuadrant)) {
+                    if (indexMaxBallList != 0) {relativeRadiant = (1 / nbrBallQuadrant) * 360;}
                 }
                 //when it is the last quadrant, the radiant will be split between the last balls
                 else {
@@ -51,42 +60,49 @@ function create() {
                 }
                 
                 //if the number of ball is sup. than "nbrBallQuadrant" the new balls will spawn in an other quadrant (increase radius)
-                if (nbrBallNow == 0) {iSeparateDistance = relativeSeparateDistance;}
-                else {iSeparateDistance = Math.ceil(nbrBallNow / nbrBallQuadrant) * relativeSeparateDistance;
+                if (indexMaxBallList == 0) {iSeparateDistance = relativeSeparateDistance;}
+                else {iSeparateDistance = Math.ceil(indexMaxBallList / nbrBallQuadrant) * relativeSeparateDistance;
                 
                 //command to check in wich quadrant the next ball spawn
-                //console.log(Math.ceil(nbrBallNow / nbrBallQuadrant))
+                //console.log(Math.ceil(indexMaxBallList / nbrBallQuadrant))
                 }
 
                 //Balls spawn with a radius corresponding to their quadrant
                 //Their position is centerfield centered 
-                relativePositionX = centerFieldX + (iSeparateDistance * Math.cos(relativeRadiant * (nbrBallNow) * Math.PI / 180))
-                relativePositionY = centerFieldY + (iSeparateDistance * Math.sin(relativeRadiant * (nbrBallNow) * Math.PI / 180))
+                relativePositionX = centerFieldX + (iSeparateDistance * Math.cos(relativeRadiant * (indexMaxBallList) * Math.PI / 180))
+                relativePositionY = centerFieldY + (iSeparateDistance * Math.sin(relativeRadiant * (indexMaxBallList) * Math.PI / 180))
                 
                 //command to check the starting position of balls. The position is relative to the center
-                //console.log("x : ", relativePositionX - centerFieldX, "y : ", relativePositionY - centerFieldY)
+                //if (indexMaxBallList > 0) {console.log("x : ", relativePositionX - centerFieldX, "y : ", relativePositionY - centerFieldY)}
                 
                 //add a ball to the list "ballArray"
-                ballArray.push(game.add.sprite(relativePositionX, relativePositionY, 'ball'));                
+                ballArray.push(game.add.sprite(relativePositionX, relativePositionY, 'ball'));
+                ballArray[indexMaxBallList].scale.x = scaleFactor;
+                ballArray[indexMaxBallList].scale.y = scaleFactor;     
             }
-        //fix the center of the ball correctly to allow rotation of the object
-        ballArray[nbrBallNow-1].anchor.setTo(0.5, 0.5);
 
-        game.physics.enable(ballArray[nbrBallNow-1], Phaser.Physics.ARCADE);
+        //fix the center of the ball correctly to allow rotation of the object
+        ballArray[indexMaxBallList].anchor.setTo(0.5, 0.5);
+
+        game.physics.enable(ballArray[indexMaxBallList], Phaser.Physics.ARCADE);
         
         //factor serve to conserve the "startVeloc"
         factor = (Math.sqrt(Math.pow(startVelocity, 2) * 2) / Math.sqrt(((relativePositionX - centerFieldX) * (relativePositionX - centerFieldX)) + ((relativePositionY - centerFieldY) * (relativePositionY - centerFieldY))))
         
         //The balls move in opposition to the center
-        ballArray[nbrBallNow-1].body.velocity.x = (relativePositionX - centerFieldX) * factor;
-        ballArray[nbrBallNow-1].body.velocity.y = (relativePositionY - centerFieldY) * factor;
+        ballArray[indexMaxBallList].body.velocity.x = (relativePositionX - centerFieldX) * factor;
+        ballArray[indexMaxBallList].body.velocity.y = (relativePositionY - centerFieldY) * factor;
 
-        ballArray[nbrBallNow-1].update = ballUpdate;
-        ballArray[nbrBallNow-1].inputEnabled = true;
-        ballArray[nbrBallNow-1].events.onInputDown.add(ballClick, ballArray[nbrBallNow-1]);  
+        ballArray[indexMaxBallList].update = ballUpdate;
+        ballArray[indexMaxBallList].inputEnabled = true;
+        ballArray[indexMaxBallList].events.onInputDown.add(ballClick, ballArray[indexMaxBallList]);  
         }
-        nbrBallNow -= 1;
-    backgroundImage.events.onInputDown.add(backgroundClick, backgroundImage)     
+        
+        //destroy the very first one ball spawning in 0;0
+        destroyBall = true;
+        destroyBallIndex.push(0);
+
+    backgroundImage.events.onInputDown.add(backgroundClick, backgroundImage)
 }
 
 ////////////////////////////////////////////////////////////////////
@@ -94,16 +110,16 @@ function create() {
 ////////////////////////////////////////////////////////////////////
 function ballUpdate() {
     var distance;
-    if (this.body.position.y + this.body.height > game.height - 70) {
+    if (this.body.position.y + this.body.height > game.height) {
         this.body.velocity.y *= -1;
     }
-    if (this.body.position.y < 70) {
+    if (this.body.position.y < 0) {
         this.body.velocity.y *= -1;
     }
-    if (this.body.position.x + this.body.width > game.width - 90) {
+    if (this.body.position.x + this.body.width > game.width) {
         this.body.velocity.x *= -1;
     }
-    if (this.body.position.x < 90) {
+    if (this.body.position.x < 0) {
         this.body.velocity.x *= -1;
     }
 }
@@ -118,9 +134,9 @@ function ballUpdate() {
 }*/
 
 function backgroundClick() {
-    nbrBallNow++;
-	var mouseClicX = game.input.mousePointer.x + ballArray[nbrBallNow].width/2
-    var mouseClicY = game.input.mousePointer.y + ballArray[nbrBallNow].height/2
+    indexMaxBallList++;
+	var mouseClicX = game.input.mousePointer.x;
+    var mouseClicY = game.input.mousePointer.y;
 
     /////////////////////////////////////////////
     //                 WIP                     //
@@ -129,16 +145,16 @@ function backgroundClick() {
 
     //add a ball to the list "ballArray"
     ballArray.push(game.add.sprite((mouseClicX, mouseClicY, 'ball')));
-    ballArray[nbrBallNow].anchor.setTo(0.5, 0.5);
-    game.physics.enable(ballArray[nbrBallNow], Phaser.Physics.ARCADE);
+    ballArray[indexMaxBallList].anchor.setTo(0.5, 0.5);
+    game.physics.enable(ballArray[indexMaxBallList-1], Phaser.Physics.ARCADE);
 
-    ballArray[nbrBallNow].body.velocity.x = startVelocity;
-    ballArray[nbrBallNow].body.velocity.y = startVelocity;
+    ballArray[indexMaxBallList].body.velocity.x = startVelocity;
+    ballArray[indexMaxBallList].body.velocity.y = startVelocity;
 
-    ballArray[nbrBallNow].update = ballUpdate;
+    ballArray[indexMaxBallList].update = ballUpdate;
 
-    ballArray[nbrBallNow].inputEnabled = true;
-    ballArray[nbrBallNow].events.onInputDown.add(ballClick, ballArray[nbrBallNow]);
+    ballArray[indexMaxBallList].inputEnabled = true;
+    ballArray[indexMaxBallList].events.onInputDown.add(ballClick, ballArray[indexMaxBallList]);
 }
 
 function ballClick() {
@@ -163,30 +179,37 @@ function update() {
     var relativePositionIY;
     var relativePositionJX;
     var relativePositionJY;
+    var target;
 
-    if (nbrBallNow > 1) {
-        for (var i = nbrBallNow-1; nbrBallNow > 1; i--) {
-            if (i >= 0) {
-                for (var j = nbrBallNow-1; nbrBallNow > 1; j--) {
-                    if (i != j && j >= 0) {
-                        relativePositionIX = ballArray[i].body.position.x;
-                        relativePositionIY = ballArray[i].body.position.y;
-                        relativePositionJX = ballArray[j].body.position.x;
-                        relativePositionJY = ballArray[j].body.position.y;
-                        if (relativePositionIX - relativePositionJX < ballArray[i].body.width && relativePositionIX - relativePositionJX > -ballArray[i].body.width) {
-                            if (relativePositionIY - relativePositionJY < ballArray[i].body.width && relativePositionIY - relativePositionJY > -ballArray[i].body.height) {
-                            console.log("collision ball n :", i, " and", j)
-                            ballArray[i].destroy();
-                            ballArray[j].destroy();
-                            ballArray.splice(2,2);
-                            nbrBallNow-=2;
-                            console.log(ballArray)
-                            }
-                        }
+    if (destroyBall == true) {
+        for (var i = destroyBallIndex.length; i > 0; i--) {
+            target = destroyBallIndex[i-1];
+            ballArray[target].destroy();
+            ballArray.splice(target,1);
+            indexMaxBallList--;
+            countDestroyedBall++;
+            target = i-1;
+            destroyBallIndex.splice(target,1);
+        }
+            destroyBall = false;
+            return;
+    }
+    
+    if (indexMaxBallList > 1) {
+        for (var i = indexMaxBallList-1; indexMaxBallList > 1 && i >= 0; i--) {
+            for (var j = indexMaxBallList-1; indexMaxBallList > 1 && j >= 0; j--) {
+                if (i != j) {
+                    relativePositionIX = ballArray[i].body.position.x;
+                    relativePositionIY = ballArray[i].body.position.y;
+                    relativePositionJX = ballArray[j].body.position.x;
+                    relativePositionJY = ballArray[j].body.position.y;
+                    if (Math.sqrt(Math.pow((relativePositionIX - relativePositionJX),2) + Math.pow((relativePositionIY - relativePositionJY),2)) < ballArray[i].body.width) {
+                        destroyBall = true;
+                        destroyBallIndex.push(i);
+                        destroyBallIndex.push(j-1);
                     }
                 }
-            }
-            
+            }           
         }
     }
 }
