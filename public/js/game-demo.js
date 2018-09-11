@@ -4,16 +4,16 @@ var game = new Phaser.Game(1280, 720, Phaser.CANVAS, 'game-demo', { preload: pre
 /////////////////////     Global Parameter     /////////////////////
 ////////////////////////////////////////////////////////////////////
 var ballArray = [];
-var nbrStartBall = 1;
-var nbrBallQuadrant = 1;//Choose the max number of ball by Quadrant
+var nbrStartBall = 5;
+var nbrBallQuadrant = 5;//Choose the max number of ball by Quadrant
 var scaleFactor = 1;      
                         
-var iSeparateDistance = 75;
+var iSeparateDistance = 90;
 var startVelocity = 100;
 
 var indexMaxBallList;//counter nbr balls
-var factor;
 var countDestroyedBall = -1;
+var soccerPlayer;
 
 var text;
 
@@ -38,6 +38,7 @@ function create() {
     var relativePositionX = centerFieldX;
     var relativePositionY = centerFieldY;
     var relativeSeparateDistance = iSeparateDistance;
+    var factor;
 
     text = game.add.text(game.width-350, 0, "SCORE : " + 0,{
     font: "45px Arial",
@@ -111,7 +112,13 @@ function create() {
             ballArray[indexMaxBallList].sprite.events.onInputDown.add(ballClick, ballArray[indexMaxBallList].sprite);  
         }
     }
-        
+    soccerPlayer = {sprite: game.add.sprite(centerFieldX, centerFieldY, 'soccerplayer')};
+    soccerPlayer.sprite.anchor.setTo(0.5, 0.5);
+    game.physics.enable(soccerPlayer.sprite, Phaser.Physics.ARCADE);
+    soccerPlayer.sprite.body.velocity.x = startVelocity;
+    soccerPlayer.sprite.body.velocity.y = startVelocity;
+    soccerPlayer.sprite.update = playerUpdate;
+
     //destroy correct the number of ball
     destruction(0,null);
     backgroundImage.events.onInputDown.add(backgroundClick, backgroundImage)
@@ -121,6 +128,22 @@ function create() {
 ///////////                Dynamic actions                //////////
 ////////////////////////////////////////////////////////////////////
 function ballUpdate() {
+    var distance;
+    if (this.body.position.y + this.body.height > game.height) {
+        this.body.velocity.y *= -1;
+    }
+    if (this.body.position.y < 0) {
+        this.body.velocity.y *= -1;
+    }
+    if (this.body.position.x + this.body.width > game.width) {
+        this.body.velocity.x *= -1;
+    }
+    if (this.body.position.x < 0) {
+        this.body.velocity.x *= -1;
+    }
+}
+
+function playerUpdate() {
     var distance;
     if (this.body.position.y + this.body.height > game.height) {
         this.body.velocity.y *= -1;
@@ -202,9 +225,16 @@ function update() {
     var relativePositionIY;
     var relativePositionJX;
     var relativePositionJY;
+    var relativePositionCloseBallX;
+    var relativePositionCloseBallY;
+    var relativePositionSoccerPlayerX;
+    var relativePositionSoccerPlayerY;
+    var factor;
+    var closeBall = 0;//the nearest ball to the player
+    var saveVelocityX;
+    var saveVelocityY;
     
-    
-    if (indexMaxBallList > 1) {
+    if (ballArray.length > 1) {
         for (var i = ballArray.length-1; ballArray.length >= 0 && i >= 0 && i < ballArray.length; i--) {
             for (var j = ballArray.length-1; ballArray.length >= 0 && j >= 0 && j < ballArray.length; j--) {
                 if (i != j) {
@@ -212,15 +242,44 @@ function update() {
                     relativePositionIY = ballArray[i].sprite.position.y;
                     relativePositionJX = ballArray[j].sprite.position.x;
                     relativePositionJY = ballArray[j].sprite.position.y;
+                    relativePositionCloseBallX = ballArray[closeBall].sprite.position.x;
+                    relativePositionCloseBallY = ballArray[closeBall].sprite.position.y;
+                    relativePositionSoccerPlayerX = soccerPlayer.sprite.position.x;
+                    relativePositionSoccerPlayerY = soccerPlayer.sprite.position.y;
+
                     if (Math.sqrt(Math.pow((relativePositionIX - relativePositionJX),2) + Math.pow((relativePositionIY - relativePositionJY),2)) < ballArray[i].sprite.width) {
                         destruction(ballArray[i].id,ballArray[j].id);
-                        i-=2;
+                        if (i > 1) {i-=2;}
+                        else if (i == 1) {i = ballArray.width - 1}
+                        else if (i == 0) {i = ballArray.width - 2} 
                         text.setText("SCORE : " + countDestroyedBall*25);
+                        closeBall = i;
+                    }
+
+                    if ((Math.sqrt(Math.pow((relativePositionIX - relativePositionSoccerPlayerX),2) + Math.pow((relativePositionIY - relativePositionSoccerPlayerY),2))) < (Math.sqrt(Math.pow((relativePositionCloseBallX - relativePositionSoccerPlayerX),2) + Math.pow((relativePositionCloseBallY - relativePositionSoccerPlayerY),2)))) {
+                        closeBall = i;
+                        console.log("ball la plus proche : ", ballArray[closeBall].id)
                     }
                 }
             }           
         }
     }
+    else    {
+        closeBall = 0;
+    }
+    for (var i = ballArray.length-1; ballArray.length >= 0 && i >= 0 && i < ballArray.length; i--) {
+        if (Math.sqrt(Math.pow((relativePositionIX - relativePositionSoccerPlayerX),2) + Math.pow((relativePositionIY - relativePositionSoccerPlayerY),2)) < soccerPlayer.sprite.width/2) {
+            destruction(ballArray[i].id,null);
+            text.setText("SCORE : " + countDestroyedBall*25);
+        }
+    }
+    if (countDestroyedBall +1 == indexMaxBallList) {
+            soccerPlayer.sprite.body.velocity.x = 0;
+            soccerPlayer.sprite.body.velocity.y = 0;         
+        }
+        else {
+            
+        }
 }
 
 ////////////////////////////////////////////////////////////////////
