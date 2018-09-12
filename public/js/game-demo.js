@@ -9,7 +9,7 @@ var nbrBallQuadrant = 5;//Choose the max number of ball by Quadrant
 var scaleFactor = 1;      
                         
 var iSeparateDistance = 90;
-var startVelocity = 100;
+var startVelocity = 150;
 
 var indexMaxBallList;//counter nbr balls
 var countDestroyedBall = -1;
@@ -121,6 +121,7 @@ function create() {
 
     //destroy correct the number of ball
     destruction(0,null);
+    indexMaxBallList--
     backgroundImage.events.onInputDown.add(backgroundClick, backgroundImage)
 }
 
@@ -256,7 +257,7 @@ function update() {
                         closeBall = i;
                     }
 
-                    if ((Math.sqrt(Math.pow((relativePositionIX - relativePositionSoccerPlayerX),2) + Math.pow((relativePositionIY - relativePositionSoccerPlayerY),2))) < (Math.sqrt(Math.pow((relativePositionCloseBallX - relativePositionSoccerPlayerX),2) + Math.pow((relativePositionCloseBallY - relativePositionSoccerPlayerY),2)))) {
+                    if (ballArray.length > 0 && (Math.sqrt(Math.pow((relativePositionIX - relativePositionSoccerPlayerX),2) + Math.pow((relativePositionIY - relativePositionSoccerPlayerY),2))) < (Math.sqrt(Math.pow((relativePositionCloseBallX - relativePositionSoccerPlayerX),2) + Math.pow((relativePositionCloseBallY - relativePositionSoccerPlayerY),2)))) {
                         closeBall = i;
                         console.log("ball la plus proche : ", ballArray[closeBall].id)
                     }
@@ -268,17 +269,20 @@ function update() {
         closeBall = 0;
     }
     for (var i = ballArray.length-1; ballArray.length >= 0 && i >= 0 && i < ballArray.length; i--) {
+        relativePositionIX = ballArray[i].sprite.position.x;
+        relativePositionIY = ballArray[i].sprite.position.y;
         if (Math.sqrt(Math.pow((relativePositionIX - relativePositionSoccerPlayerX),2) + Math.pow((relativePositionIY - relativePositionSoccerPlayerY),2)) < soccerPlayer.sprite.width/2) {
             destruction(ballArray[i].id,null);
             text.setText("SCORE : " + countDestroyedBall*25);
         }
     }
-    if (countDestroyedBall +1 == indexMaxBallList) {
+    if (countDestroyedBall == indexMaxBallList && indexMaxBallList > 1) {
             soccerPlayer.sprite.body.velocity.x = 0;
             soccerPlayer.sprite.body.velocity.y = 0;         
         }
         else {
-            
+            soccerPlayer.sprite.body.velocity.x = 10;
+            soccerPlayer.sprite.body.velocity.y = 10;
         }
 }
 
