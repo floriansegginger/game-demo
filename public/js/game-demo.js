@@ -10,8 +10,7 @@ function preload() {
     //  The second parameter is the URL of the image (relative)
     game.load.image('background', '/images/background.jpg');
     game.load.image('ball', '/images/ball.png');
-  
-  // Super coucou
+
 }
 
 function create() {
